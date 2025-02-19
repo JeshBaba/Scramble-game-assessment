@@ -1,0 +1,66 @@
+const words = [
+  { word: "javascript", hint: "A popular programming language" },
+  { word: "function", hint: "A reusable block of code" },
+  { word: "variable", hint: "Used to store data" },
+  { word: "developer", hint: "A person who writes code" }
+];
+
+let currentWord = "";
+let scrambledWord = "";
+let currentHint = "";
+let score = 0;
+let timer;
+
+const wordDisplay = document.getElementById("word");
+const hintDisplay = document.getElementById("hint");
+const inputField = document.getElementById("guess");
+const scoreDisplay = document.getElementById("score");
+const timerDisplay = document.getElementById("timer");
+const messageDisplay = document.getElementById("message");
+
+function scrambleWord(word) {
+  return word.split('').sort(() => Math.random() - 0.5).join('');
+}
+
+function startGame() {
+  let randomIndex = Math.floor(Math.random() * words.length);
+  currentWord = words[randomIndex].word;
+  currentHint = words[randomIndex].hint;
+  scrambledWord = scrambleWord(currentWord);
+  wordDisplay.textContent = scrambledWord;
+  hintDisplay.textContent = "";
+  inputField.value = "";
+  messageDisplay.textContent = "";
+  startTimer();
+  setTimeout(() => hintDisplay.textContent = `Hint: ${currentHint}`, 5000);
+}
+
+function startTimer() {
+  let timeLeft = 30;
+  timerDisplay.textContent = `Time: ${timeLeft}s`;
+  clearInterval(timer);
+  timer = setInterval(() => {
+    timeLeft--;
+    timerDisplay.textContent = `Time: ${timeLeft}s`;
+    if (timeLeft === 0) {
+      clearInterval(timer);
+      messageDisplay.textContent = "Time's up! Try again.";
+      startGame();
+    }
+  }, 1000);
+}
+
+function checkGuess() {
+  if (inputField.value.toLowerCase() === currentWord) {
+    score++;
+    scoreDisplay.textContent = `Score: ${score}`;
+    messageDisplay.textContent = "Correct!";
+    clearInterval(timer);
+    setTimeout(startGame, 1000);
+  } else {
+    messageDisplay.textContent = "Wrong! Try again.";
+  }
+}
+
+document.getElementById("submit").addEventListener("click", checkGuess);
+window.onload = startGame;
